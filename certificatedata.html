@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Birth Certificate</title>
+    <link rel="stylesheet" href="kb.css">
+    <!-- Include jsPDF library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+</head>
+
+<body>
+    <style>
+        /* kb.css */
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.5;
+            margin-left: 300px;
+            margin-right: 300px;
+            padding: 100px;
+            padding-left: 50px;
+            background-color: white;
+        }
+
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            border: 3px solid #000000;
+            padding: 20px;
+            background-color: white;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .form-number p {
+            align-items: center;
+        }
+
+        .logo-left {
+            text-align: left;
+        }
+
+        .logo-right {
+            text-align: right;
+        }
+
+        .logo img {
+            height: 100px;
+        }
+
+        .form-number {
+            text-align: center;
+        }
+
+        .certificateNo {
+            text-align: right;
+        }
+
+        h1 {
+            text-align: center;
+            margin: 10px 0;
+            font-size: 1.5em;
+        }
+
+        p {
+            text-align: justify;
+            margin: 10px 0;
+            font-size: 1em;
+        }
+
+        .form-section {
+            margin: 20px 0;
+        }
+
+        label {
+            font-weight: bold;
+            display: inline-block;
+            width: 300px;
+            padding-left: 150px;
+        }
+
+        span {
+            display: inline-block;
+            width: calc(100% - 310px);
+            padding: 5px;
+            font-size: 1em;
+            padding-left: 150px;
+        }
+
+        footer {
+            margin-top: 20px;
+        }
+
+        footer p {
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .button-container {
+            text-align: center;
+        }
+
+        .button-container button {
+            padding: 10px 20px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 20px;
+            margin-right: 10px;
+        }
+
+        .button-container button:hover {
+            background-color: #0056b3;
+        }
+
+    </style>
+    <div class="container">
+        <header>
+            <div class="logo logo-left">
+                <img src="/img/logo1.png" alt="Logo">
+            </div>
+            <div class="form-number">
+                <p>प्रमाणपत्र क्रमांक:</p>
+                <p>Certificate No: <span id="certificateNo"></span></p>
+            </div>
+            <div class="logo logo-right">
+                <img src="/img/logo2.png" alt="Logo">
+            </div>
+        </header>
+        <h1>जन्म प्रमाणपत्र</h1>
+        <h1>BIRTH CERTIFICATE</h1>
+
+        <div class="form-section">
+            <label>बालकाचे नाव / Name of Child:</label> <span id="nameOfChild">...........................</span><br>
+            <label>जन्म तारीख / Date of Birth:</label> <span id="dob">...........................</span><br>
+            <label>जन्म स्थान / Place of Birth:</label> <span id="placeOfBirth">...........................</span><br>
+            <label>आईचा आधार क्रमांक / Mother's Aadhaar No:</label> <span id="motherAadhar">...........................</span><br>
+            <label>वडिलांचा आधार क्रमांक / Father's Aadhaar No:</label> <span id="fatherAadhar">...........................</span><br>
+            <label>कायमचा पत्ता / Permanent Address:</label> <span id="address">...........................</span><br>
+            <label>नोंदणी क्रमांक / Registration No.:</label> <span id="registrationNo">...........................</span><br>
+            <label>प्रमाणपत्र दिल्याचा दिनांक / Date of Issue:</label> <span id="dateOfIssue">...........................</span><br>
+        </div>
+
+        <div class="button-container">
+            <button onclick="shareCertificate()">Share Certificate via WhatsApp</button>
+        </div>
+
+        <footer>
+            <p>मुद्र / Seal</p>
+        </footer>
+    </div>
+
+    <script>
+        const data = JSON.parse(sessionStorage.getItem('certificateData'));
+
+        if (data) {
+            document.getElementById('certificateNo').textContent = data.Certificate_No;
+            document.getElementById('nameOfChild').textContent = data.Name_of_Child;
+            document.getElementById('dob').textContent = data.Date_of_Birth;
+            document.getElementById('placeOfBirth').textContent = data.Place_of_Birth;
+            document.getElementById('motherAadhar').textContent = data.Mothers_Aadhaar_No;
+            document.getElementById('fatherAadhar').textContent = data.Fathers_Aadhaar_No;
+            document.getElementById('address').textContent = data.Permanent_Address;
+            document.getElementById('registrationNo').textContent = data.Registration_Number;
+            document.getElementById('dateOfIssue').textContent = data.Date_of_Issue;
+        } else {
+            document.body.innerHTML = '<p>No certificate data found.</p>';
+        }
+
+        function shareCertificate() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const certificateText = `
+                Birth Certificate\n
+                Government of India\n
+                Name of the local body issuing Certificate: ${data.Name_of_the_local_body_issuing_Certificate}\n
+                Certificate No.: ${data.Certificate_No}\n
+                Name of Child: ${data.Name_of_Child}\n
+                Date of Birth: ${data.Date_of_Birth}\n
+                Place of Birth: ${data.Place_of_Birth}\n
+                Mother's Aadhaar No.: ${data.Mothers_Aadhaar_No}\n
+                Father's Aadhaar No.: ${data.Fathers_Aadhaar_No}\n
+                Permanent Address: ${data.Permanent_Address}\n
+                Registration Number: ${data.Registration_Number}\n
+                Date of Issue: ${data.Date_of_Issue}
+            `;
+
+            doc.text(certificateText, 10, 10);
+            const pdfOutput = doc.output('datauristring');
+
+            const whatsappURL = `https://api.whatsapp.com/send?text=${encodeURIComponent(certificateText)}`;
+            window.open(whatsappURL, '_blank');
+        }
+    </script>
+</body>
+
+</html>

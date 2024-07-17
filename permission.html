@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Permission Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f4f8;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            width: 80%;
+            max-width: 800px;
+            padding: 20px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+            text-align: center;
+        }
+        .container h2 {
+            margin: 0 0 20px;
+            color: #333;
+        }
+        .container button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        .approve {
+            background: #28a745;
+            color: #fff;
+        }
+        .approve:hover {
+            background: #218838;
+        }
+        .reject {
+            background: #dc3545;
+            color: #fff;
+        }
+        .reject:hover {
+            background: #c82333;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Review Certificate</h2>
+    <div id="certificateDetails">
+        <!-- Certificate details will be inserted here -->
+    </div>
+    <button class="approve">Approve</button>
+    <button class="reject">Reject</button>
+</div>
+
+<script>
+    const data = JSON.parse(sessionStorage.getItem('certificateData'));
+    const certificateDetails = document.getElementById('certificateDetails');
+    
+    if (data) {
+        certificateDetails.innerHTML = `
+            <p>Certificate No.: ${data.Certificate_No}</p>
+            <p>Name of the local body issuing Certificate: ${data.Name_of_the_local_body_issuing_Certificate}</p>
+            <p>Name of Child: ${data.Name_of_Child}</p>
+            <p>Date of Birth: ${data.Date_of_Birth}</p>
+            <p>Place of Birth: ${data.Place_of_Birth}</p>
+            <p>Mother's Aadhaar No.: ${data.Mothers_Aadhaar_No}</p>
+            <p>Father's Aadhaar No.: ${data.Fathers_Aadhaar_No}</p>
+            <p>Permanent Address: ${data.Permanent_Address}</p>
+            <p>Registration Number: ${data.Registration_Number}</p>
+            <p>Date of Issue: ${data.Date_of_Issue}</p>
+        `;
+    } else {
+        certificateDetails.innerHTML = '<p>No certificate data found.</p>';
+    }
+
+    function sendWhatsAppMessage(message) {
+        const phoneNumber = 'whatsapp:+1234567890'; // Replace with actual phone number
+        const encodedMessage = encodeURIComponent(message);
+        const whatsappURL = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${encodedMessage}`;
+        window.open(whatsappURL, '_blank');
+    }
+
+    document.querySelector('.approve').addEventListener('click', function() {
+        sendWhatsAppMessage('Your request for a birth certificate has been approved.');
+        sessionStorage.setItem('approvalStatus', 'approved');
+        window.location.href = 'certificatedata.html';
+    });
+
+    document.querySelector('.reject').addEventListener('click', function() {
+        sendWhatsAppMessage('Your request for a birth certificate has been rejected.');
+        sessionStorage.setItem('approvalStatus', 'rejected');
+        // Optionally, you can redirect to a different page or show a message
+    });
+</script>
+
+</body>
+</html>

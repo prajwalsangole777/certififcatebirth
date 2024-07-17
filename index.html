@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Birth Certificate Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f4f8;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .form-container, .certificate-container {
+            width: 80%;
+            max-width: 800px;
+            padding: 20px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+        .form-container h2, .certificate-header h2 {
+            margin: 0 0 20px;
+            color: #333;
+        }
+        .form-container form {
+            display: flex;
+            flex-direction: column;
+        }
+        .form-container label, .form-container input {
+            margin: 5px 0;
+            font-size: 1em;
+            color: #333;
+        }
+        .form-container input {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .form-container button {
+            padding: 10px;
+            border: none;
+            background: #28a745;
+            color: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .form-container button:hover {
+            background: #218838;
+        }
+        .certificate-header, .certificate-content, .footer {
+            text-align: center;
+        }
+        .certificate-content p, .footer p {
+            margin: 10px 0;
+            color: #333;
+        }
+        .certificate-content span {
+            font-weight: bold;
+        }
+        .qr-code {
+            margin-top: 20px;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h2>Birth Certificate Form</h2>
+    <form id="certificateForm">
+        <label for="localBody">Name of the local body issuing Certificate:</label>
+        <input type="text" id="localBody" name="Name_of_the_local_body_issuing_Certificate" required>
+        
+        <label for="certificateNo">Certificate No.:</label>
+        <input type="text" id="certificateNo" name="Certificate_No" required>
+        
+        <label for="nameOfChild">Name of Child:</label>
+        <input type="text" id="nameOfChild" name="Name_of_Child" required>
+        
+        <label for="dob">Date of Birth:</label>
+        <input type="date" id="dob" name="Date_of_Birth" required>
+        
+        <label for="placeOfBirth">Place of Birth:</label>
+        <input type="text" id="placeOfBirth" name="Place_of_Birth" required>
+        
+        <label for="motherAadhar">Mother's Aadhaar No.:</label>
+        <input type="text" id="motherAadhar" name="Mothers_Aadhaar_No" required>
+        
+        <label for="fatherAadhar">Father's Aadhaar No.:</label>
+        <input type="text" id="fatherAadhar" name="Fathers_Aadhaar_No" required>
+        
+        <label for="address">Permanent Address:</label>
+        <input type="text" id="address" name="Permanent_Address" required>
+        
+        <label for="registrationNo">Registration Number:</label>
+        <input type="text" id="registrationNo" name="Registration_Number" required>
+        
+        <label for="dateOfIssue">Date of Issue:</label>
+        <input type="date" id="dateOfIssue" name="Date_of_Issue" required>
+        
+        <button type="submit">Generate Certificate</button>
+    </form>
+</div>
+
+<div class="certificate-container hidden" id="certificateContainer">
+    <div class="certificate-header">
+        <h2>Birth Certificate</h2>
+        <p>Government of Maharashtra</p>
+        <p>Health Department</p>
+    </div>
+    <div class="certificate-content">
+        <p>प्रमाणपत्र क्र./Certificate No.: <span id="certCertificateNo"></span></p>
+        <p>नाम / Name of the local body issuing Certificate: <span id="certLocalBody"></span></p>
+        <p>Name of Child: <span id="certNameOfChild"></span></p>
+        <p>Date of Birth: <span id="certDob"></span></p>
+        <p>Place of Birth: <span id="certPlaceOfBirth"></span></p>
+        <p>Mother's Aadhaar No.: <span id="certMotherAadhar"></span></p>
+        <p>Father's Aadhaar No.: <span id="certFatherAadhar"></span></p>
+        <p>Permanent Address: <span id="certAddress"></span></p>
+        <p>Registration Number: <span id="certRegistrationNo"></span></p>
+        <p>Date of Issue: <span id="certDateOfIssue"></span></p>
+    </div>
+    <div class="footer">
+        <p>This is a computer-generated certificate.</p>
+        <p>Registrar (Birth & Death), Municipal Corporation Sambhajinagar</p>
+    </div>
+</div>
+
+<script>
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbxoSLPpYm8Nmvg2YF56vHi0GGyk2_Qnfz_vl-Taz1LVAITPdzcnIsHMX3LKC5mvHrl-JA/exec'; 
+    const form = document.getElementById('certificateForm');
+
+    form.addEventListener('submit', function(event) {
+        event.preventDefault();
+        
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+
+        // Save certificate data to sessionStorage
+        sessionStorage.setItem('certificateData', JSON.stringify(data));
+
+        fetch(scriptURL, {
+            method: 'POST',
+            body: new URLSearchParams(data)
+        })
+        .then(response => response.json())
+        .then(responseData => {
+            if (responseData.status === 'Success') {
+                document.getElementById('certLocalBody').innerText = data.Name_of_the_local_body_issuing_Certificate;
+                document.getElementById('certCertificateNo').innerText = data.Certificate_No;
+                document.getElementById('certNameOfChild').innerText = data.Name_of_Child;
+                document.getElementById('certDob').innerText = data.Date_of_Birth;
+                document.getElementById('certPlaceOfBirth').innerText = data.Place_of_Birth;
+                document.getElementById('certMotherAadhar').innerText = data.Mothers_Aadhaar_No;
+                document.getElementById('certFatherAadhar').innerText = data.Fathers_Aadhaar_No;
+                document.getElementById('certAddress').innerText = data.Permanent_Address;
+                document.getElementById('certRegistrationNo').innerText = data.Registration_Number;
+                document.getElementById('certDateOfIssue').innerText = data.Date_of_Issue;
+                
+                document.getElementById('certificateContainer').classList.remove('hidden');
+                document.getElementById('certificateForm').classList.add('hidden');
+
+                 // Redirect to permission page
+                 window.location.href = 'permission.html';
+            } else {
+                alert('Error: ' + responseData.message);
+            }
+        })
+        .catch(error => {
+            alert('Error: ' + error.message);
+        });
+    });
+</script>
+
+</body>
+</html>
